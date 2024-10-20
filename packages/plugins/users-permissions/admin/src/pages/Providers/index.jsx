@@ -119,6 +119,10 @@ export const ProvidersPage = () => {
       return forms.providersWithSubdomain;
     }
 
+    // if (providerToEditName === 'linkedin') {
+    //   return forms.linkedin;
+    // }
+
     return forms.providers;
   }, [providerToEditName, isProviderWithSubdomain]);
 
@@ -136,7 +140,12 @@ export const ProvidersPage = () => {
   const handleSubmit = async (values) => {
     trackUsage('willEditAuthenticationProvider');
 
-    submitMutation.mutate({ providers: { ...data, [providerToEditName]: values } });
+    let formattedValues = { ...values };
+    if (providerToEditName === 'linkedin') {
+      formattedValues.scope = values.scope.split(' ').map(scope => scope.trim());
+    }
+
+    submitMutation.mutate({ providers: { ...data, [providerToEditName]: formattedValues } });
   };
 
   if (isLoading) {

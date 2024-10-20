@@ -113,8 +113,16 @@ module.exports = ({ strapi }) => {
     );
   };
 
+  const getConfig = async (provider) => {
+    const providers = strapi
+      .store({ type: 'plugin', name: 'users-permissions', key: 'grant' })
+      .get();
+    return _.get(providers[provider], 'scope');
+  };
+
   return {
     connect,
     buildRedirectUri,
+    getConfig,
   };
 };

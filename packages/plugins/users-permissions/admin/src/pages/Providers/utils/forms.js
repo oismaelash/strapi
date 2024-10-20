@@ -34,6 +34,16 @@ const secretLabel = {
   defaultMessage: 'Client Secret',
 };
 
+const scopeLabel = {
+  id: getTrad('PopUpForm.Providers.scope.label'),
+  defaultMessage: 'Scope',
+};
+
+const scopePlaceholder = {
+  id: getTrad('PopUpForm.Providers.scope.placeholder'),
+  defaultMessage: 'r_liteprofile r_emailaddress',
+};
+
 const CALLBACK_REGEX = /^$|^[a-z][a-z0-9+.-]*:\/\/[^\s/$.?#](?:[^\s]*[^\s/$.?#])?$/i;
 const SUBDOMAIN_REGEX = /^(([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+)(:\d+)?(\/\S*)?$/i;
 
@@ -98,6 +108,18 @@ const forms = {
       ],
       [
         {
+          intlLabel: scopeLabel,
+          name: 'scope',
+          type: 'text',
+          placeholder: scopePlaceholder,
+          size: 12,
+          validations: {
+            required: true,
+          },
+        },
+      ],
+      [
+        {
           intlLabel: callbackLabel,
           placeholder: callbackPlaceholder,
           name: 'callback',
@@ -128,6 +150,11 @@ const forms = {
       }),
       secret: yup.string().when('enabled', {
         is: true,
+        then: yup.string().required(translatedErrors.required.id),
+        otherwise: yup.string(),
+      }),
+      scope: yup.string().when('enabled', {
+        is: true,        
         then: yup.string().required(translatedErrors.required.id),
         otherwise: yup.string(),
       }),

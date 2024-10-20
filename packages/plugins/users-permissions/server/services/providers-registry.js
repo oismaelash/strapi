@@ -4,6 +4,12 @@ const { strict: assert } = require('assert');
 const jwt = require('jsonwebtoken');
 const urljoin = require('url-join');
 const jwkToPem = require('jwk-to-pem');
+const { getService } = require('./utils');
+
+const getLinkedInScope = async () => {
+  const config = await getService('providers').getConfig('linkedin');
+  return !!config.scope ? config.scope.split(' ') : ['r_liteprofile', 'r_emailaddress'];
+};
 
 const getCognitoPayload = async ({ idToken, jwksUrl, purest }) => {
   const {
@@ -310,7 +316,7 @@ const initProviders = ({ baseURL, purest }) => ({
       key: '',
       secret: '',
       callbackUrl: `${baseURL}/linkedin/callback`,
-      scope: ['r_liteprofile', 'r_emailaddress'],
+      scope: getLinkedInScope,
     },
     async authCallback({ accessToken }) {
       const linkedIn = purest({ provider: 'linkedin' });
