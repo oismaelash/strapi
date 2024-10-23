@@ -34,14 +34,14 @@ const secretLabel = {
   defaultMessage: 'Client Secret',
 };
 
-const scopeLabel = {
+const scopeLinkedinLabel = {
   id: getTrad('PopUpForm.Providers.scope.label'),
   defaultMessage: 'Scope',
 };
 
-const scopePlaceholder = {
+const scopeLinkedinPlaceholder = {
   id: getTrad('PopUpForm.Providers.scope.placeholder'),
-  defaultMessage: 'r_liteprofile r_emailaddress',
+  defaultMessage: 'TEXT',
 };
 
 const CALLBACK_REGEX = /^$|^[a-z][a-z0-9+.-]*:\/\/[^\s/$.?#](?:[^\s]*[^\s/$.?#])?$/i;
@@ -108,13 +108,96 @@ const forms = {
       ],
       [
         {
-          intlLabel: scopeLabel,
-          name: 'scope',
+          intlLabel: callbackLabel,
+          placeholder: callbackPlaceholder,
+          name: 'callback',
           type: 'text',
-          placeholder: scopePlaceholder,
           size: 12,
           validations: {
             required: true,
+          },
+        },
+      ],
+      [
+        {
+          intlLabel: hintLabel,
+          name: 'noName',
+          type: 'text',
+          validations: {},
+          size: 12,
+          disabled: true,
+        },
+      ],
+    ],
+    schema: yup.object().shape({
+      enabled: yup.bool().required(translatedErrors.required.id),
+      key: yup.string().when('enabled', {
+        is: true,
+        then: yup.string().required(translatedErrors.required.id),
+        otherwise: yup.string(),
+      }),
+      secret: yup.string().when('enabled', {
+        is: true,
+        then: yup.string().required(translatedErrors.required.id),
+        otherwise: yup.string(),
+      }),
+      callback: yup.string().when('enabled', {
+        is: true,
+        then: yup
+          .string()
+          .matches(CALLBACK_REGEX, translatedErrors.regex.id)
+          .required(translatedErrors.required.id),
+        otherwise: yup.string(),
+      }),
+    }),
+  },
+  linkedin: {
+    form: [
+      [
+        {
+          intlLabel: enabledLabel,
+          name: 'enabled',
+          type: 'bool',
+          description: enabledDescription,
+          size: 6,
+          validations: {
+            required: true,
+          },
+        },
+      ],
+      [
+        {
+          intlLabel: keyLabel,
+          name: 'key',
+          type: 'text',
+          placeholder: textPlaceholder,
+          size: 12,
+          validations: {
+            required: true,
+          },
+        },
+      ],
+      [
+        {
+          intlLabel: secretLabel,
+          name: 'secret',
+          type: 'text',
+          placeholder: textPlaceholder,
+          size: 12,
+          validations: {
+            required: true,
+          },
+        },
+      ],
+      [
+        {
+          intlLabel: scopeLinkedinLabel,
+          name: 'scope',
+          type: 'text',
+          placeholder: scopeLinkedinPlaceholder,
+          size: 12,
+          validations: {
+            required: false,
           },
         },
       ],
@@ -153,11 +236,7 @@ const forms = {
         then: yup.string().required(translatedErrors.required.id),
         otherwise: yup.string(),
       }),
-      scope: yup.string().when('enabled', {
-        is: true,        
-        then: yup.string().required(translatedErrors.required.id),
-        otherwise: yup.string(),
-      }),
+      scope: yup.string(),
       callback: yup.string().when('enabled', {
         is: true,
         then: yup

@@ -61,6 +61,18 @@ export const ProvidersPage = () => {
     }
   );
 
+  const scopeLinkedinInitialData = React.useMemo(() => {
+    return !!data['linkedin']?.scope
+      ? data['linkedin']?.scope
+      : 'r_liteprofile,r_emailaddress';
+  }, [data]);
+
+  const getInitialData = React.useMemo(() => {
+    return providerToEditName === 'linkedin'
+      ? { ...data[providerToEditName], scope: scopeLinkedinInitialData }
+      : data[providerToEditName];
+  }, [providerToEditName, data, scopeLinkedinInitialData]);
+
   const submitMutation = useMutation((body) => put('/users-permissions/providers', body), {
     async onSuccess() {
       await queryClient.invalidateQueries(['users-permissions', 'get-providers']);
@@ -115,13 +127,13 @@ export const ProvidersPage = () => {
       return forms.email;
     }
 
+    if (providerToEditName === 'linkedin') {
+      return forms.linkedin;
+    }
+
     if (isProviderWithSubdomain) {
       return forms.providersWithSubdomain;
     }
-
-    // if (providerToEditName === 'linkedin') {
-    //   return forms.linkedin;
-    // }
 
     return forms.providers;
   }, [providerToEditName, isProviderWithSubdomain]);
@@ -142,7 +154,7 @@ export const ProvidersPage = () => {
 
     let formattedValues = { ...values };
     if (providerToEditName === 'linkedin') {
-      formattedValues.scope = values.scope.split(' ').map(scope => scope.trim());
+      formattedValues.scope = !!values.scope ? values.scope : 'r_liteprofile,r_emailaddress';
     }
 
     submitMutation.mutate({ providers: { ...data, [providerToEditName]: formattedValues } });
@@ -243,7 +255,7 @@ export const ProvidersPage = () => {
         </Layouts.Content>
       </Page.Main>
       <FormModal
-        initialData={data[providerToEditName]}
+        initialData={getInitialData}
         isOpen={isOpen}
         isSubmiting={submitMutation.isLoading}
         layout={layoutToRender}
